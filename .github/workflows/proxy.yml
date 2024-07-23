@@ -1,5 +1,4 @@
 name: pr bot
-pre-receive
 on:
   pull_request:
     types: [opened, synchronize]
