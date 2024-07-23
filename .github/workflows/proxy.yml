@@ -24,6 +24,7 @@ jobs:
           echo "
            branch: ${{ github.run_id }}
            workspace: $GITHUB_WORKSPACE"
+           exit 100
           
           
       - name: git config
