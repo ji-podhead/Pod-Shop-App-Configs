@@ -1,5 +1,5 @@
 name: pr bot
-
+pre-receive
 on:
   pull_request:
     types: [opened, synchronize]
@@ -13,8 +13,9 @@ jobs:
     permissions: write-all
     
     steps:
-      - name: Checkout öffentliches Repository
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v3
+    - uses: pre-commit/action@v3.0.1
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -76,7 +77,7 @@ jobs:
                # fi
                # # Führen Sie weitere Überprüfungen durch oder lassen Sie den Commit zu
                echo "please see your related branch and pr that was automatically created: ${{ github.run_id }}"   
-               exit 0
+               exit 1
       - name: Wait for tests in private repo
         run: |
           # Implement waiting logic here, possibly using a script that checks the status of the tests in the private repo
