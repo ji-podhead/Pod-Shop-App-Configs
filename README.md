@@ -10,3 +10,4 @@ so we are currently trying to setup a git proxy that pushes the commit to a priv
 
 - added credentials to sign intoo private repo and process iac configuration checks in a private repo before pushing to publlic
 
+k
