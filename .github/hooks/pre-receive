@@ -5,7 +5,7 @@
 # and rejects all pushes when the "reject" push option is used.
 #
 # To enable this hook, rename this file to "pre-receive".
-
+#test1
 if test -n "$GIT_PUSH_OPTION_COUNT"
 then
 	i=0
