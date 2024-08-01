@@ -17,12 +17,14 @@ jobs:
         with:
           path: main
 
-      - name: Checkout private repository
-        uses: actions/checkout@v4
-        with:
-          repository:  ji-podhead/App-Configs-private 
-          token: ${{ secrets.PRIVATE_PAT }}
-          path: main
+      
+      - name: Pull Private Repository
+        run: |
+          git config --global user.email "bot@ji-podhead.com"
+          git config --global user.name "bot"      
+          git pull https://${{ secrets.PRIVATE_PAT }}@github.com/ji-podhead/App-Configs-private.git
+
+
 
 
 
