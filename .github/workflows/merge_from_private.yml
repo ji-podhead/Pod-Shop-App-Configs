@@ -11,41 +11,43 @@ jobs:
   merge_from_private:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+
+      - name: Checkout private repository
         uses: actions/checkout@v2
         with:
+          repository: 'the-pod-shop/App-Configs-private.git'
+          github_token: ${{ secrets.API_TOKEN_GITHUB }}
+          branch: main
           fetch-depth: 0 # Optional: Fetches all history for all tags and branches
-
-      # Weitere Schritte...
-
-      - name: Setup Git Config
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-
-      - name: Create new branch 'merge_private'
-        run: |
-          git checkout merge_private
-          echo "Branch 'merge_private' created."
-
-      - name: Fetch code from another repo
-        run: |
-          git remote add other-repo git@github.com:the-pod-shop/App-Configs-private.git
-          git fetch other-repo
-          git merge other-repo/main --no-commit --no-ff
-          echo "Code from other repo fetched."
-        env:
-          GH_TOKEN: ${{ secrets.API_TOKEN_GITHUB }}
     
+          # Weitere Schritte...
 
-      - name: Push changes to 'merge_private' branch
+      - name: git config
         run: |
-          git push origin merge_private
+          BRANCH_NAME="temp-pr-${{ github.run_id }}"
+          git config --global user.email "bot@ji-podhead.com"
+          git config --global user.name "pod shop bot"
 
+      - name: Push to target repo
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.API_TOKEN_GITHUB }}
+          repository: 'the-pod-shop/App-Configs-private.git' 
+          branch: merge_private
+          directory: ./
+    
+      - name: Checkout target repository
+        uses: actions/checkout@v2
+        with:
+          repository: 'the-pod-shop/App-Configs-private.git' # Ersetzen Sie 'owner/target-repo' durch den tatsächlichen Benutzernamen und Reponamen
+          path: 'merge_private'
+          fetch-depth: 0 # Optional: Fetches all history for all tags and branches
+    
+     
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets. }}
+          token: ${{ secrets.API_TOKEN_GITHUB  }}
           commit-message: "Merge private branch with code from another repo"
           title: "Merge private branch with external code"
           body: "This PR merges the newly created 'merge_private' branch which contains code from another repo."
