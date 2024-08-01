@@ -15,23 +15,22 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: merge_private
-      
-      - name: Checkout private repository
-        uses: actions/checkout@v2
-        with:
-          repository: the-pod-shop/App-Configs-private
-          github-token: ${{ secrets.PRIVATE_PAT }}
-         # branch: main
-          path: main
-          fetch-depth: 0 # Optional: Fetches all history for all tags and branches
-    
-          # Weitere Schritte...
-
       - name: git config
         run: |
           BRANCH_NAME="temp-pr-${{ github.run_id }}"
           git config --global user.email "bot@ji-podhead.com"
-          git config --global user.name "pod shop bot"
+          git config --global user.name "pod shop bot"  
+      - name: Checkout private repository
+        uses: actions/checkout@v2
+        with:
+          repository: the-pod-shop/App-Configs-private
+          token: ${{ secrets.PRIVATE_PAT }}
+          path: development
+          fetch-depth: 0 # Optional: Fetches all history for all tags and branches
+    
+          # Weitere Schritte...
+
+
 
       - name: Push to target repo
         uses: ad-m/github-push-action@master
