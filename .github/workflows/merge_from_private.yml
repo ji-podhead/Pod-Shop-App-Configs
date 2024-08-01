@@ -22,8 +22,8 @@ jobs:
         with:
           repository:  ji-podhead/App-Configs-private 
           token: ${{ secrets.PRIVATE_PAT }}
-          path: main
-          ref: stable
+          
+          ref: main
           fetch-depth: 0 # Optional: Fetches all history for all tags and branches
     
           # Weitere Schritte...
