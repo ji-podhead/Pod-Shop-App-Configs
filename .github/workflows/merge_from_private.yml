@@ -22,7 +22,7 @@ jobs:
         run: |
     
           # Klonen des Repositories in ein temporäres Verzeichnis
-          git clone https://${{ secrets.PRIVATE_PAT }@github.com:the-pod-shop/App-Configs-private.git
+          git clone https://${{ secrets.PRIVATE_PAT }@github.com/the-pod-shop/App-Configs-private.git
 
           # Verschieben aller Dateien aus dem Unterordner 'unterordner' in das aktuelle Verzeichnis
           cp -R temp_repo/* .
