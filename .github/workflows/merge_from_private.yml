@@ -21,7 +21,14 @@ jobs:
       - name: Pull Private Repository
         run: |
     
-          git clone https://${{ secrets.PRIVATE_PAT }}@github.com/ji-podhead/App-Configs-private.git
+          # Klonen des Repositories in ein temporäres Verzeichnis
+          git clone https://${{ secrets.PRIVATE_PAT }}@github.com/ji-podhead/App-Configs-private.git temp_repo
+          
+          # Verschieben aller Dateien aus dem Unterordner 'unterordner' in das aktuelle Verzeichnis
+          cp -R temp_repo/unterordner/* .
+          
+          # Löschen des temporären Verzeichnisses
+          rm -rf temp_repo
           ls -r
 
 
