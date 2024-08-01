@@ -1,0 +1,50 @@
+name: merge_from_private
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'feat/**'
+      - 'merge_private'
+
+jobs:
+  merge_from_private:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Optional: Fetches all history for all tags and branches
+
+      # Weitere Schritte...
+
+      - name: Setup Git Config
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Create new branch 'merge_private'
+        run: |
+          git checkout -b merge_private
+          echo "Branch 'merge_private' created."
+
+      - name: Fetch code from another repo
+        run: |
+          git remote add other-repo git@github.com:the-pod-shop/App-Configs-private.git
+          git fetch other-repo
+          git merge other-repo/main --no-commit --no-ff
+          echo "Code from other repo fetched."
+
+      - name: Push changes to 'merge_private' branch
+        run: |
+          git push origin merge_private
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Merge private branch with code from another repo"
+          title: "Merge private branch with external code"
+          body: "This PR merges the newly created 'merge_private' branch which contains code from another repo."
+          branch: merge_private
+          base: development
