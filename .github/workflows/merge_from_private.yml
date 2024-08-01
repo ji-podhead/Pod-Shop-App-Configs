@@ -23,7 +23,7 @@ jobs:
       - name: Checkout private repository
         uses: actions/checkout@v2
         with:
-          repository: the-pod-shop/App-Configs-private
+          repository:  ji-podhead/App-Configs-private 
           token: ${{ secrets.PRIVATE_PAT }}
           path: development
           fetch-depth: 0 # Optional: Fetches all history for all tags and branches
@@ -36,7 +36,7 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.API_TOKEN_GITHUB }}
-          repository: 'the-pod-shop/App-Configs-private' 
+          repository: the-pod-shop/Pod-Shop-App-Configs 
           branch: merge_private
           directory: ./
     
