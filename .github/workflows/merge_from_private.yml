@@ -11,14 +11,19 @@ jobs:
   merge_from_private:
     runs-on: ubuntu-latest
     steps:
-
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: merge_private
+      
+  
       - name: Checkout private repository
         uses: actions/checkout@v4
         with:
           repository: 'the-pod-shop/App-Configs-private'
           token: ${{ secrets.API_TOKEN_GITHUB }}
          # branch: main
-          path: App-Configs-private
+          path: main
           fetch-depth: 0 # Optional: Fetches all history for all tags and branches
     
           # Weitere Schritte...
