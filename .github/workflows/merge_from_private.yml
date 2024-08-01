@@ -20,7 +20,7 @@ jobs:
       - name: Checkout private repository
         uses: actions/checkout@v4
         with:
-          repository: 'the-pod-shop/App-Configs-private'
+          repository: the-pod-shop/App-Configs-private
           token: ${{ secrets.API_TOKEN_GITHUB }}
          # branch: main
           path: main
