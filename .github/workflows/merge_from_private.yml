@@ -13,11 +13,12 @@ jobs:
     steps:
 
       - name: Checkout private repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: 'the-pod-shop/App-Configs-private'
           github_token: ${{ secrets.API_TOKEN_GITHUB }}
           branch: main
+          path: App-Configs-private
           fetch-depth: 0 # Optional: Fetches all history for all tags and branches
     
           # Weitere Schritte...
