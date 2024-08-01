@@ -21,7 +21,7 @@ jobs:
       - name: Pull Private Repository
         run: |
     
-          git pull https://${{ secrets.PRIVATE_PAT }}@github.com/ji-podhead/App-Configs-private.git
+          git clone https://${{ secrets.PRIVATE_PAT }}@github.com/ji-podhead/App-Configs-private.git
 
 
 
