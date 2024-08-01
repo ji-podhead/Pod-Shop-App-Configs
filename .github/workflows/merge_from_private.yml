@@ -17,7 +17,7 @@ jobs:
         with:
           repository: 'the-pod-shop/App-Configs-private'
           token: ${{ secrets.API_TOKEN_GITHUB }}
-          branch: main
+         # branch: main
           path: App-Configs-private
           fetch-depth: 0 # Optional: Fetches all history for all tags and branches
     
