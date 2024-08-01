@@ -15,18 +15,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          path: merge_private
+          path: main
 
       - name: Checkout private repository
         uses: actions/checkout@v4
         with:
           repository:  ji-podhead/App-Configs-private 
           token: ${{ secrets.PRIVATE_PAT }}
-          
-          ref: main
-          fetch-depth: 0 # Optional: Fetches all history for all tags and branches
-    
-          # Weitere Schritte...
+          path: main
 
 
 
