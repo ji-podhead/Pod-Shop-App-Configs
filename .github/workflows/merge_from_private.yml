@@ -20,7 +20,7 @@ jobs:
       
       - name: Pull Private Repository
         run: |
-          git config --global user.email "bot@ji-podhead.com"
+          git config --global user.email "ji-podhead@github.com"
           git config --global user.name "bot"      
           git pull https://${{ secrets.PRIVATE_PAT }}@github.com/ji-podhead/App-Configs-private.git
 
