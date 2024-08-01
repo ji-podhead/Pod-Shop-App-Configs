@@ -22,7 +22,7 @@ jobs:
         run: |
     
           git clone https://${{ secrets.PRIVATE_PAT }}@github.com/ji-podhead/App-Configs-private.git
-          ls
+          ls -r
 
 
 
