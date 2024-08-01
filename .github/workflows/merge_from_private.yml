@@ -34,6 +34,9 @@ jobs:
           git fetch other-repo
           git merge other-repo/main --no-commit --no-ff
           echo "Code from other repo fetched."
+        env:
+          GH_TOKEN: ${{ secrets.API_TOKEN_GITHUB }}
+    
 
       - name: Push changes to 'merge_private' branch
         run: |
@@ -42,7 +45,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets. }}
           commit-message: "Merge private branch with code from another repo"
           title: "Merge private branch with external code"
           body: "This PR merges the newly created 'merge_private' branch which contains code from another repo."
