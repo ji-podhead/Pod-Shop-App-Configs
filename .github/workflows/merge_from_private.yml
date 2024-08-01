@@ -16,12 +16,11 @@ jobs:
         with:
           path: merge_private
       
-  
       - name: Checkout private repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
         with:
           repository: the-pod-shop/App-Configs-private
-          token: ${{ secrets.PRIVATE_PAT }}
+          github-token: ${{ secrets.PRIVATE_PAT }}
          # branch: main
           path: main
           fetch-depth: 0 # Optional: Fetches all history for all tags and branches
