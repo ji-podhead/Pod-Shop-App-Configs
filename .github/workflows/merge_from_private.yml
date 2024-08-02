@@ -16,17 +16,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: main
-
       
-      - name: Pull Private Repository
-        run: |
-          git clone https://${{ secrets.API_TOKEN_GITHUB }}@github.com/the-pod-shop/App-Configs-private.git
-          cp -R App-Configs-private/* ./
-          rm -r App-Configs-private
-          ls -r
-
-
-
+      - name: Checkout private repository
+        uses: actions/checkout@v4
+        with:
+          repository:  ji-podhead/App-Configs-private 
+          token: ${{ secrets.API_TOKEN_GITHUB }}
+          path: main
+          fetch-depth: 0 # Optional: Fetches all history for all tags and branches
 
       - name: Push to target repo
         uses: ad-m/github-push-action@master
@@ -42,7 +39,6 @@ jobs:
           repository: 'the-pod-shop/App-Configs-private'
           path: 'merge_private'
           fetch-depth: 0 # Optional: Fetches all history for all tags and branches
-    
      
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
