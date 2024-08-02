@@ -18,33 +18,38 @@ jobs:
           repository:  the-pod-shop/App-Configs-private 
           token: ${{ secrets.ACTIONS_KEY }}
           path: main
-      - name: copy 
+          - name: Checkout private repository
+          uses: actions/checkout@v4
+          with:
+            repository:  the-pod-shop/App-Configs-private 
+            token: ${{ secrets.ACTIONS_KEY }}
+            path: main
+        
+      - name: Prepare changes
         run: |
-              mkdir temp
-              ls -r
-              cd main
-              cp -r ./* ../temp
-              ls -r
-      - name: Checkout
+          mkdir temp
+          cp -r main/./* temp/
+      
+      - name: Checkout public repository
         uses: actions/checkout@v4
         with:
           repository:  the-pod-shop/Pod-Shop-App-Configs 
           token: ${{ secrets.ACTIONS_KEY }}
           path: development
       
-      - name: paste 
+      - name: Apply changes
         run: |
-              ls -r
-              cd temp
-              cp -r ./* ../development/
-              ls -r
+          cp -r temp/./* development/
       
-      - name: push changes
-        run: | 
-              cd main
-              git config --global user.email "podbot@ji-podhead.com"
-              git config --global user.name "podbot"
-              git add . && git commit -m "bot push" && git push                 
+      - name: Commit and push changes
+        run: |
+          cd development
+          git config --global user.email "podbot@ji-podhead.com"
+          git config --global user.name "podbot"
+          git add .
+          git commit -m "bot push"
+          git push
+                     
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
