@@ -29,8 +29,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository:  the-pod-shop/Pod-Shop-App-Configs 
-          token: ${{ secrets.API_TOKEN_GITHUB }}
-          path: main
+          token: ${{ secrets.ACTIONS_KEY }}
+          path: development
       
       - name: paste 
         run: |
@@ -41,15 +41,17 @@ jobs:
       
       
       - name: push changes
-        run: | 
-              cd main
-              git config --global user.email "podbot@ji-podhead.com"
-              git config --global user.name "podbot"
-              git add . && git commit -m "bot push" && git push                 
+        with:
+            token: ${{ secrets.ACTIONS_KEY  }}
+          run: | 
+                cd main
+                git config --global user.email "podbot@ji-podhead.com"
+                git config --global user.name "podbot"
+                git add . && git commit -m "bot push" && git push                 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets.API_TOKEN_GITHUB  }}
+          token: ${{ secrets.ACTIONS_KEY  }}
           commit-message: "Merge private branch with public target branch"
           title: "Admin wants to forcefully merge priv. repo into main"
           body: "This PR was created by ji-podhead bot"
