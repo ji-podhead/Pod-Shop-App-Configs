@@ -33,6 +33,7 @@ jobs:
               ls -r
       - name: push changes
         run: | 
+              cd main
               git add . && git commit -m "bot push" && git push                 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
