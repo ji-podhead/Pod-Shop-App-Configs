@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"k8s","Source":"../modules/k8s","Dir":""},{"Key":"variables","Source":"../variables","Dir":"../variables"},{"Key":"vault","Source":"../modules/providers/vault","Dir":"../modules/providers/vault"}]}
