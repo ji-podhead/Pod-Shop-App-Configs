@@ -34,14 +34,14 @@ jobs:
         run: |
           cp -r temp/./* development/
       
-    #  - name: Commit and push changes
-    #    run: |
-    #      cd development
-    #      git config --global user.email "podbot@ji-podhead.com"
-    #      git config --global user.name "podbot"
-    #      git add .
-    #      git commit -m "bot push"
-    #      git push
+      - name: Commit and push changes
+        run: |
+          cd development
+          git config --global user.email "podbot@ji-podhead.com"
+          git config --global user.name "podbot"
+          git add .
+          git commit -m "bot push"
+          git push
                      
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
