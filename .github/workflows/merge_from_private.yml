@@ -15,6 +15,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          repository:  the-pod-shop/Pod-Shop-App-Configs 
+          token: ${{ secrets.API_TOKEN_GITHUB }}
           path: main
       
       - name: Checkout private repository
@@ -23,7 +25,11 @@ jobs:
           repository:  the-pod-shop/App-Configs-private 
           token: ${{ secrets.ACTIONS_KEY }}
           path: main
-
+      
+      - name: info
+        run: |
+              ls -r
+    
       - name: push changes
         run: | 
               git add . && git commit -m "bot push" && git push                 
