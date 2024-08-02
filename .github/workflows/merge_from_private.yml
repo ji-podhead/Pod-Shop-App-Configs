@@ -12,6 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
+      - name: Checkout private repository
+        uses: actions/checkout@v4
+        with:
+          repository:  the-pod-shop/App-Configs-private 
+          token: ${{ secrets.ACTIONS_KEY }}
+          path: main
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -19,12 +25,7 @@ jobs:
           token: ${{ secrets.API_TOKEN_GITHUB }}
           path: main
       
-      - name: Checkout private repository
-        uses: actions/checkout@v4
-        with:
-          repository:  the-pod-shop/App-Configs-private 
-          token: ${{ secrets.ACTIONS_KEY }}
-          path: main
+
       
       - name: info
         run: |
