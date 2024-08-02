@@ -29,7 +29,8 @@ jobs:
       - name: info
         run: |
               ls -r
-    
+              cd main
+              ls -r
       - name: push changes
         run: | 
               git add . && git commit -m "bot push" && git push                 
