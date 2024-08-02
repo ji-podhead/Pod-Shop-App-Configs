@@ -18,6 +18,13 @@ jobs:
           repository:  the-pod-shop/App-Configs-private 
           token: ${{ secrets.ACTIONS_KEY }}
           path: main
+      - name: copy 
+        run: |
+              mkdir temp
+              ls -r
+              cd main
+              cp ./* ../temp
+              ls -r
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -25,13 +32,14 @@ jobs:
           token: ${{ secrets.API_TOKEN_GITHUB }}
           path: main
       
-
+      - name: paste 
+      run: |
+            ls -r
+            cd temp
+            cp ./* ../main/
+            ls -r
       
-      - name: info
-        run: |
-              ls -r
-              cd main
-              ls -r
+      
       - name: push changes
         run: | 
               cd main
