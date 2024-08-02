@@ -10,41 +10,54 @@ on:
 jobs:
   merge_from_private:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout private repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Optional: Fetches all history for all tags and branches
-
-      # Weitere Schritte...
-
-      - name: Setup Git Config
+          repository:  the-pod-shop/App-Configs-private 
+          token: ${{ secrets.ACTIONS_KEY }}
+          path: main
+      - name: Prepare changes
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-
-      - name: Create new branch 'merge_private'
-        run: |
-          git checkout -b merge_private
-          echo "Branch 'merge_private' created."
-
-      - name: Fetch code from another repo
-        run: |
-          git remote add other-repo git@github.com:the-pod-shop/App-Configs-private.git
-          git fetch other-repo
-          git merge other-repo/main --no-commit --no-ff
-          echo "Code from other repo fetched."
-
-      - name: Push changes to 'merge_private' branch
-        run: |
-          git push origin merge_private
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
+          mkdir temp
+          cp -r main/./* temp/
+      
+      - name: Checkout public repository
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Merge private branch with code from another repo"
-          title: "Merge private branch with external code"
-          body: "This PR merges the newly created 'merge_private' branch which contains code from another repo."
-          branch: merge_private
-          base: development
+          repository:  the-pod-shop/Pod-Shop-App-Configs 
+          token: ${{ secrets.ACTIONS_KEY }}
+          path: development
+      
+      - name: Apply changes
+        run: |
+          cp -r temp/./* development/
+      
+      - name: Commit and push changes
+        run: |
+          cd development
+          git config --global user.email "podbot@ji-podhead.com"
+          git config --global user.name "podbot"
+          git add .
+          git commit -m "bot push"
+          git push
+      - name: Create Pull Request using GitHub API
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.ACTIONS_KEY }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/the-pod-shop/Pod-Shop-App-Configs/pulls \
+            -d '{"title":"Admin wants to forcefully merge priv. repo into main","body":"This PR was created by ji-podhead bot","head":"merge_private","base":"development"}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_KEY }}
+                    
+  #    - name: Create Pull Request
+  #      uses: peter-evans/create-pull-request@v3
+  #      with:
+  #        token: ${{ secrets.ACTIONS_KEY  }}
+  #        commit-message: "Admin wants to merge private branch with public target branch. Reason is most likely that the iac source code refers to the repos base infrastructure that includes: iac for static testing, github server, jenkins, vault, or foreman cluster"
+  #        title: "Admin wants to forcefully merge priv. repo into main"
+  #        body: "This PR was created by ji-podhead bot"
+  #        branch: development
+  #        base: merge_private

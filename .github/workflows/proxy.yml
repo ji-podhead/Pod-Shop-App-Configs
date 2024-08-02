@@ -1,5 +1,4 @@
-name: Automatische Weiterleitung von PRs an eine private Repo
-
+name: pr bot
 on:
   pull_request:
     types: [opened, synchronize]
@@ -13,8 +12,9 @@ jobs:
     permissions: write-all
     
     steps:
-      - name: Checkout öffentliches Repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - uses: pre-commit/action@v3.0.1
         with:
           persist-credentials: false
 
@@ -24,6 +24,7 @@ jobs:
           echo "
            branch: ${{ github.run_id }}
            workspace: $GITHUB_WORKSPACE"
+           exit 100
           
           
       - name: git config
@@ -35,13 +36,18 @@ jobs:
       - name: Push to target repo
         uses: ad-m/github-push-action@master
         with:
+          persist-credentials: false
+          fetch-depth: 0
           github_token: ${{ secrets.API_TOKEN_GITHUB }}
           repository: ji-podhead/iac-testrepo 
-          branch: test
+          branch: ${{ github.run_id }}
           directory: ./
     
       - name: Remove files from commit after testing
         run: |
+             ls $GITHUB_WORKSPACE/
+             git reset --hard HEAD~1
+             ls $GITHUB_WORKSPACE/
 
           
       - name: Create new branch with README
@@ -53,8 +59,9 @@ jobs:
           NEW_BRANCH_NAME=${{ github.run_id }}
           git checkout -b "$NEW_BRANCH_NAME"
           # --- removing files ---
-          git reset --hard HEAD~1
-          git commit --allow-empty -m "Removed files after testing"
+          ls $GITHUB_WORKSPACE/
+          #rm -R "$GITHUB_WORKSPACE/"
+
           # --- create readme ---
           echo "Your push was turned into a PR and pushed to a private repo for testing. Your code is currently sealed and will be released for review here, once all tests passed." > README.md
           git add README.md
@@ -62,7 +69,17 @@ jobs:
           # --- push to new branch ---
           git push --set-upstream origin "$NEW_BRANCH_NAME"
           #git push
-          
+
+      - name: finish
+        run: |   
+               # # Überprüfen Sie, ob bestimmte Dateien geändert wurden
+               # if [ "$(git diff --name-only HEAD^ HEAD | grep 'datei_zu_überprüfen.txt')" ]; then
+               #     echo "Änderung an 'datei_zu_überprüfen.txt' gefunden. Bitte überprüfen Sie die Änderungen."
+               #     exit 1
+               # fi
+               # # Führen Sie weitere Überprüfungen durch oder lassen Sie den Commit zu
+               echo "please see your related branch and pr that was automatically created: ${{ github.run_id }}"   
+               exit 1
       - name: Wait for tests in private repo
         run: |
           # Implement waiting logic here, possibly using a script that checks the status of the tests in the private repo

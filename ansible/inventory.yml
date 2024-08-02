@@ -1,0 +1,47 @@
+# this are the machines that we want to provision and install libvirt
+# the facts are set in proxmox_playbook, because we fetch them from our vault server
+# we pass the vault_token as a parameter using the -e flag: -e "vault_token=hvs...  
+workshop_machines:
+  hosts:
+    dcworkshop1:
+      vars:
+        ansible_ssh_host: "placeholder" 
+        ansible_user: "placeholder"
+        ansible_ssh_pass: "placeholder"
+        ansible_connection: ssh
+        ansible_become_password: "placeholder" # this is required for the root accsess via sudo
+    dcworkshop2:
+      vars:
+        ansible_ssh_host: "placeholder" 
+        ansible_user: "placeholder"
+        ansible_ssh_pass: "placeholder"
+        ansible_connection: ssh
+        ansible_become_password: "placeholder" # this is required for the root accsess via sudo
+
+   
+    # those are our libvirt vms that build our proxmox-cluster  which we will create after we have 
+    # installed libvirt. since those facts are generic, we will set them later
+proxmox:
+  hosts:
+    dcworkshop2_proxmox:
+      vars:
+        proxmox_user: "placeholder"
+        ip: "placeholder"
+        proxmox_pass: "placeholder"
+        proxmox_token: "placeholder"
+
+    dcworkshop1_proxmox:
+      vars:
+        proxmox_user: "placeholder"
+        ip: "placeholder"
+        proxmox_pass: "placeholder"
+        proxmox_token: "placeholder"
+#
+#
+#           dcworkshop2:
+#     vars:
+#       ansible_ssh_host: "placeholder" 
+#       ansible_user: "placeholder"
+#       ansible_ssh_pass: "placeholder"
+#       ansible_connection: ssh
+#       ansible_become_password: "placeholder"
