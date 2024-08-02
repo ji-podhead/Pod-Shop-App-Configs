@@ -20,7 +20,7 @@ jobs:
       
       - name: Pull Private Repository
         run: |
-          git clone https://${{ secrets.PRIVATE_PAT }}@github.com/the-pod-shop/App-Configs-private.git
+          git clone https://${{ secrets.API_TOKEN_GITHUB }}@github.com/the-pod-shop/App-Configs-private.git
           cp -R App-Configs-private/* ./
           rm -r App-Configs-private
           ls -r
