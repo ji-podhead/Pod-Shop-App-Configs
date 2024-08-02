@@ -25,21 +25,6 @@ jobs:
           path: main
 
 
-      - name: Push to target repo
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.ACTIONS_KEY  }}
-          repository: the-pod-shop/Pod-Shop-App-Configs 
-          branch: merge_private
-          directory: ./
-    
-      - name: Checkout target repository
-        uses: actions/checkout@v2
-        with:
-          repository: 'the-pod-shop/App-Configs-private'
-          path: 'merge_private'
-          fetch-depth: 0 # Optional: Fetches all history for all tags and branches
-     
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
