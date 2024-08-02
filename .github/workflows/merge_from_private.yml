@@ -28,7 +28,7 @@ jobs:
       - name: Push to target repo
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.API_TOKEN_GITHUB }}
+          github_token: ${{ secrets.ACTIONS_KEY  }}
           repository: the-pod-shop/Pod-Shop-App-Configs 
           branch: merge_private
           directory: ./
