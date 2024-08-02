@@ -36,7 +36,7 @@ jobs:
         run: |
               ls -r
               cd temp
-              cp -r ./* ../main/
+              cp -r ./* ../development/
               ls -r
       
       - name: push changes
