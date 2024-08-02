@@ -24,13 +24,15 @@ jobs:
           token: ${{ secrets.ACTIONS_KEY }}
           path: main
 
-
+      - name: push changes
+        run: | 
+              git add . && git commit -m "bot push" && git push                 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.API_TOKEN_GITHUB  }}
-          commit-message: "Merge private branch with code from another repo"
-          title: "Merge private branch with external code"
-          body: "This PR merges the newly created 'merge_private' branch which contains code from another repo."
-          branch: merge_private
-          base: development
+          commit-message: "Merge private branch with public target branch"
+          title: "Admin wants to forcefully merge priv. repo into main"
+          body: "This PR was created by ji-podhead bot"
+          branch: main
+          base: merge_private
