@@ -33,11 +33,11 @@ jobs:
           path: main
       
       - name: paste 
-      run: |
-            ls -r
-            cd temp
-            cp ./* ../main/
-            ls -r
+        run: |
+              ls -r
+              cd temp
+              cp ./* ../main/
+              ls -r
       
       
       - name: push changes
