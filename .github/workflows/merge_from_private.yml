@@ -39,15 +39,12 @@ jobs:
               cp -r ./* ../main/
               ls -r
       
-      
       - name: push changes
-        with:
-            token: ${{ secrets.ACTIONS_KEY  }}
-          run: | 
-                cd main
-                git config --global user.email "podbot@ji-podhead.com"
-                git config --global user.name "podbot"
-                git add . && git commit -m "bot push" && git push                 
+        run: | 
+              cd main
+              git config --global user.email "podbot@ji-podhead.com"
+              git config --global user.name "podbot"
+              git add . && git commit -m "bot push" && git push                 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
