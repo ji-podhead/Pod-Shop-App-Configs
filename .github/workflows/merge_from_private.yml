@@ -48,7 +48,7 @@ jobs:
             -H "Authorization: token ${{ secrets.ACTIONS_KEY }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/the-pod-shop/Pod-Shop-App-Configs/pulls \
-            -d '{"title":"Admin wants to forcefully merge priv. repo into main","body":"This PR was created by ji-podhead bot","head":"development","base":"merge_private"}'
+            -d '{"title":"Admin wants to forcefully merge priv. repo into main","body":"This PR was created by ji-podhead bot","head":"merge_private","base":"development"}'
         env:
           GITHUB_TOKEN: ${{ secrets.ACTIONS_KEY }}
                     
