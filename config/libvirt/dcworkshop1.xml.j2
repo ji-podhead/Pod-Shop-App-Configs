@@ -1,0 +1,23 @@
+
+<domain type='kvm'>
+  <memory>131072</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type arch="i686">hvm</type>
+  </os>
+  <clock sync="localtime"/>
+  <devices>
+    <emulator>/usr/libexec/qemu-kvm</emulator>
+    <disk type='file' device='disk'>
+      <source file='/var/lib/libvirt/images/proxmox-ve_8.2-1.iso'/>
+      <target dev='hda'/>
+    </disk>
+    <interface type='network'>
+    <mac address="52:54:00:62:f8:25"/>
+      <source network='default'/>
+    </interface>
+    <graphics type='vnc' port='-1' keymap='de'/>
+  </devices>
+</domain>
+
+
