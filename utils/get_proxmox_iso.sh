@@ -1,4 +1,4 @@
-#!/bin/bash
+    #!/bin/bash
 
 # Überprüfen, ob die ISO-Datei bereits vorhanden ist
 if [ ! -f "./proxmox-ve_8.2-1.iso" ]; then
