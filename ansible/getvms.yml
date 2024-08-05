@@ -38,51 +38,34 @@
   become_method: sudo
   become_user: root
   tasks:
-    - name: install software
-      block:
-      - name: Install wget
-        ansible.builtin.dnf:
-          name: wget
-          state: present
-      - name: Install libvirt
-        ansible.builtin.dnf:
-          name: libvirt
-          state: present
-      - name: get_proxmox_iso
-        ansible.builtin.shell: |
-          cd /var/lib/libvirt/images/
-        # wget -c https://enterprise.proxmox.com/iso/proxmox-ve_8.2-1.iso 
-        args:
-          chdir: ./ 
 
-    - name: create vms
+    - name: Iterate over VMs
       block:
-        - name: destroy VM
-          ignore_errors: true
-          community.libvirt.virt:
-            name:  "{{ inventory_hostname }}_proxmox" 
-            command: destroy
-            autostart: true
-            xml: "{{ lookup('template', '../config/libvirt/' + inventory_hostname + '.xml.j2') }}"
-        # defining and launching an LXC guest
-        - name: define VM
-          community.libvirt.virt:
-            name: "{{ inventory_hostname }}_proxmox"
-            command: define
-            autostart: true
-            xml: "{{ lookup('template', '../config/libvirt/' + inventory_hostname + '.xml.j2') }}"
-        - name: Create VM
-          community.libvirt.virt:
-            name: "{{ inventory_hostname  }}_proxmox"
-            command: create
-            autostart: true
-            xml: "{{ lookup('template', '../config/libvirt/' + inventory_hostname + '.xml.j2') }}"
         - name: Get VMs list
           community.libvirt.virt:
             command: list_vms
           register: existing_vms
           changed_when: no
+        - name: Get VM details
+          community.libvirt.virt:
+            name: "{{ item.name }}"
+            command: dumpxml
+          register: vm_details
+          changed_when: no
 
+        - name: Extract IP address
+          set_fact:
+            vm_ip: "{{ vm_details.xml.find('<domain><networks><ip>{{ item }}</ip></networks></domain>') }}"
+          when: vm_ip is defined
+          loop: "{{ vm_details.xml.split('\n').filter(regex='^<ip address') }}"
+
+        - name: Extract MAC addresses
+          set_fact:
+            vm_mac: "{{ vm_details.xml.find('<interface type=\'network\'><source network=\'default\'/><mac address=\'{{ item }}\'/></interface>') }}"
+          when: vm_mac is defined
+          loop: "{{ vm_details.xml.split('\n').filter(regex='^<mac address') }}"
+
+      loop: "{{ vm_list.vms }}"
 
 #    - name: Create new container with minimal options
 #      community.general.proxmox:
