@@ -5,71 +5,125 @@
   become_method: sudo
   become_user: root
   tasks:
+
     - name: gethosts
       debug:
         var: inventory_hostname
-    - name: get_secrets_from_vault
-      set_fact:
-          proxmox_user_secret: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/' + inventory_hostname + '/' , engine_mount_point='keyvalue', url='http://127.0.0.1:8200',  token=vault_token) }}"
 
-    - name: Get secrets from Vault for each host
-      set_fact:
-        ansible_ssh_host: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['ip'] }}"
-        ansible_user: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['user'] }}"
-        ansible_ssh_pass: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['pass'] }}"
-        ansible_become_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['pass'] }}"
+    - name: fetch and store secrets
+      block:
+      - name: get_secrets_from_vault
+        set_fact:
+            proxmox_user_secret: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/' + inventory_hostname + '/' , engine_mount_point='keyvalue', url='http://127.0.0.1:8200',  token=vault_token) }}"
 
-    - name: Install wget
-      ansible.builtin.dnf:
-        name: wget
-        state: present
-    - name: Install libvirt
-      ansible.builtin.dnf:
-        name: libvirt
-        state: present
- 
-    - name: get_proxmox_iso
-      ansible.builtin.shell: |
-        cd /var/lib/libvirt/images/
-       # wget -c https://enterprise.proxmox.com/iso/proxmox-ve_8.2-1.iso 
-      args:
-        chdir: ./   
-    - name: Install qemu
-      yum:
-        name: qemu-kvm
-        state: latest
-    - name: destroy VM
-      ignore_errors: true
-      community.libvirt.virt:
-        name:  "{{ inventory_hostname }}_proxmox" 
-        command: destroy
-        autostart: true
-        xml: "{{ lookup('template', '../config/libvirt/' + inventory_hostname + '.xml.j2') }}"
+      - name: save secrets in inventory
+        set_fact:
+          ansible_ssh_host: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['ip'] }}"
+          ansible_user: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['user'] }}"
+          ansible_ssh_pass: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['pass'] }}"
+          ansible_become_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['pass'] }}"
+      - name: save additional secrets for dcworkshop2
+        set_fact:
+          ilo_ip: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['ilo_ip'] }}"
+          ilo_pass: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['ilo_pass'] }}"
+          ilo_user: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ansible/proxmox/'+ inventory_hostname, engine_mount_point='keyvalue', url='http://127.0.0.1:8200', token=vault_token)['data']['data']['ilo_user'] }}"
+        when: inventory_hostname == 'dcworkshop2'
 
-    # defining and launching an LXC guest
-    - name: define VM
-      community.libvirt.virt:
-        name: "{{ inventory_hostname }}_proxmox"
-        command: define
-        autostart: true
-        xml: "{{ lookup('template', '../config/libvirt/' + inventory_hostname + '.xml.j2') }}"
+- hosts: dcworkshop2
+  gather_facts: no
 
+  collections:
+  - ji_podhead.ilohelper
+  tasks:
 
+    - name: wait_for_boot
+     # no_log: true
+      ilohelper:
+        iLO: "{{ ilo_ip }}"
+        login_account: "{{ ilo_user }}"
+        login_password: "{{ilo_pass}}"
+        target_ip: "{{ansible_ssh_host}}"
+        command: "get_server_status"
+      delegate_to: "localhost"
+      register: script_output
 
-    - name: Create VM
-      community.libvirt.virt:
-        name: "{{ inventory_hostname  }}_proxmox"
-        command: create
-        autostart: true
-        xml: "{{ lookup('template', '../config/libvirt/' + inventory_hostname + '.xml.j2') }}"
+    - name: Display script output
+      ansible.builtin.debug:
+        var: script_output.stdout_lines
 
-    - name: Get VMs list
-      community.libvirt.virt:
-        command: list_vms
-      register: existing_vms
-      changed_when: no
+- hosts: workshop_machines
+  gather_facts: no
+  become: true
+  become_method: sudo
+  become_user: root
+  tasks:
+    - name: install software
+      block:
+      - name: Install wget
+        ansible.builtin.dnf:
+          name: wget
+          state: present
+      - name: Install libvirt
+        ansible.builtin.dnf:
+          name: libvirt
+          state: present
+      - name: get_proxmox_iso
+        ansible.builtin.shell: |
+          cd /var/lib/libvirt/images/
+        # wget -c https://enterprise.proxmox.com/iso/proxmox-ve_8.2-1.iso 
+        args:
+          chdir: ./ 
 
+    - name: create vms
+      block:
+        - name: destroy VM
+          ignore_errors: true
+          community.libvirt.virt:
+            name:  "{{ inventory_hostname }}_proxmox" 
+            command: destroy
+            autostart: true
+            xml: "{{ lookup('template', '../config/libvirt/' + inventory_hostname + '.xml.j2') }}"
+        # defining and launching an LXC guest
+        - name: define VM
+          community.libvirt.virt:
+            name: "{{ inventory_hostname }}_proxmox"
+            command: define
+            autostart: true
+            xml: "{{ lookup('template', '../config/libvirt/' + inventory_hostname + '.xml.j2') }}"
+        - name: Create VM
+          community.libvirt.virt:
+            name: "{{ inventory_hostname  }}_proxmox"
+            command: create
+            autostart: true
+            xml: "{{ lookup('template', '../config/libvirt/' + inventory_hostname + '.xml.j2') }}"
+        - name: Get VMs list
+          community.libvirt.virt:
+            command: list_vms
+          register: existing_vms
+          changed_when: no
 
+#    - name: Iterate over VMs
+#      block:
+#        - name: Get VM details
+#          community.libvirt.virt:
+#            name: "{{ item.name }}"
+#            command: dumpxml
+#          register: vm_details
+#          changed_when: no
+#
+#        - name: Extract IP address
+#          set_fact:
+#            vm_ip: "{{ vm_details.xml.find('<domain><networks><ip>{{ item }}</ip></networks></domain>') }}"
+#          when: vm_ip is defined
+#          loop: "{{ vm_details.xml.split('\n').filter(regex='^<ip address') }}"
+#
+#        - name: Extract MAC addresses
+#          set_fact:
+#            vm_mac: "{{ vm_details.xml.find('<interface type=\'network\'><source network=\'default\'/><mac address=\'{{ item }}\'/></interface>') }}"
+#          when: vm_mac is defined
+#          loop: "{{ vm_details.xml.split('\n').filter(regex='^<mac address') }}"
+#
+#      loop: "{{ vm_list.vms }}"
 
 #    - name: Create new container with minimal options
 #      community.general.proxmox:
