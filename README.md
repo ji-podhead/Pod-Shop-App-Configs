@@ -71,7 +71,27 @@ graph TD;
 
 
 ```
-# 1.8.
+## 5.8.
+- i have created an anisble galaxy-collection that automatically starts the server and waits till its bootet up, so ssh wont fail in an ansible script. 
+  - it is not yet production ready though. 
+  - i noticed that either need to debug the plugin locally or, build and push, so i thought i should build a workflow that automatically does that for me, while upgrading the version etc. no problem, but it takes ages on the github runner,
+- so my next step is to use docker and gh actions cache, to build an image and cache it every time the requirements change that are listed in the plugin_requirements.json:
+   ```json
+    python:
+      redfish: latest
+      pyyaml: latest
+      pandas: latest
+      matplotlib: latest
+    apt:
+      ansible: latest
+  ```
+  ### Further Steps
+ - deploy the base infra (proxmox-cluster, github-server/Gitea/ArgoCD & Vaul-HA) to dc-workshop1&2   using ansible
+     - set the vault secrets and variables generically
+    - deploy k8s node on proxmox using terraform
+  - deploy and set up Argo-CD using Terraform  
+
+## 1.8.
 - decided to use prereceive hooks and a second private repo to seal my code before review
   - bot will then automatically sync with main repo but unseal if all checks pass
   - therefore a few changes where required
